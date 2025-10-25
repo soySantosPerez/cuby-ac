@@ -1,0 +1,23 @@
+{
+  "title": "Cuby AC",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Cuby",
+        "description": "Enter your Cuby account credentials.",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid email or password.",
+      "cannot_connect": "Cannot connect to Cuby API. Please try again.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This account is already configured."
+    }
+  }
+}

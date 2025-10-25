@@ -1,0 +1,14 @@
+{
+  "domain": "cuby_ac",
+  "name": "Cuby AC",
+  "version": "0.1.0",
+  "documentation": "https://github.com/soySantosPerez/cuby-ac",
+  "issue_tracker": "https://github.com/soySantosPerez/cuby-ac/issues",
+  "integration_type": "hub",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@soySantosPerez"],
+  "iot_class": "cloud_polling",
+  "config_flow": true,
+  "loggers": ["custom_components.cuby_ac"]
+}
