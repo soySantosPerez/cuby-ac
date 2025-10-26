@@ -26,11 +26,13 @@ SUPPORTED_HVAC_MODES = [
     HVACMode.DRY,
     HVACMode.AUTO,
 ]
+SUPPORTED_FAN_MODES = ["auto", "low", "medium", "high"]
 
 SUPPORTED_FEATURES = (
     ClimateEntityFeature.TARGET_TEMPERATURE
     | ClimateEntityFeature.TURN_ON
     | ClimateEntityFeature.TURN_OFF
+    | ClimateEntityFeature.FAN_MODE
 )
 
 # -------------------------
@@ -109,6 +111,8 @@ class CubyDeviceClimate(CoordinatorEntity[CubyCoordinator], ClimateEntity):
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_current_temperature: Optional[float] = None
     _attr_target_temperature: Optional[float] = None
+    _attr_fan_modes = SUPPORTED_FAN_MODES
+    _attr_fan_mode: str | None = None
 
     def __init__(self, coordinator: CubyCoordinator, api: CubyApi, token: str, device_id: str, name: str) -> None:
         super().__init__(coordinator)
@@ -171,6 +175,12 @@ class CubyDeviceClimate(CoordinatorEntity[CubyCoordinator], ClimateEntity):
                 "dry": HVACMode.DRY,
                 "auto": HVACMode.AUTO,
             }.get(mode, HVACMode.AUTO)
+        
+        # Fan mode (from device lastState)
+        fan = str((last.get("fan") or "auto")).lower()
+        if fan not in SUPPORTED_FAN_MODES:
+            fan = "auto"
+        self._attr_fan_mode = fan
 
     # ----- Coordinator hooks -----
     async def async_update(self) -> None:
@@ -213,6 +223,20 @@ class CubyDeviceClimate(CoordinatorEntity[CubyCoordinator], ClimateEntity):
     async def async_turn_off(self) -> None:
         await self._post_state({"type": "power", "power": "off"})
         self._attr_hvac_mode = HVACMode.OFF
+        self.async_write_ha_state()
+
+    async def async_set_fan_mode(self, fan_mode: str) -> None:
+        """Set fan speed (auto/low/medium/high)."""
+        fm = (fan_mode or "").lower()
+        if fm not in SUPPORTED_FAN_MODES:
+            _LOGGER.warning("[CUBY] Unsupported fan mode requested: %s", fan_mode)
+            return
+
+        payload = {"type": "fan", "fan": fm}
+        await self._post_state(payload)
+
+        # Reflect immediately in UI; coordinator refresh will confirm
+        self._attr_fan_mode = fm
         self.async_write_ha_state()
 
     async def _post_state(self, payload: Dict[str, Any]) -> None:
