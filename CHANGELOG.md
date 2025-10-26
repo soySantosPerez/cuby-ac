@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2025-10-26
+### Added
+- New switch platform with four entities: eco, turbo, and long.
+- Icons for all switches (leaf, run-fast, monitor, windy).
+- Full grouping of switches under the parent device.
+### Improved
+- Logging and device registry structure.
+- Better consistency between climate and switch entities.
+
 ## [0.2.1] - 2025-10-25
 ### Added
 - Swing mode toggle (vertical & horizontal) for Cuby devices.

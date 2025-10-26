@@ -22,6 +22,8 @@ Once configured, your Cuby devices appear under **Devices & Entities**, allowing
 - Monitor **current temperature** and **status**
 - Choose whether to display temperatures in **Celsius or Fahrenheit**
 - Automatically refresh device states via **DataUpdateCoordinator**
+- Change **fan speed** (`auto`, `low`, `medium`, `high`)  
+- Change **swing mode** 
 
 Tokens are stored securely and remain valid for **365 days**, minimizing re-authentication.
 
@@ -79,6 +81,7 @@ Tokens are stored securely and remain valid for **365 days**, minimizing re-auth
 ✅ Power on/off, temperature, and mode control  
 ✅ **Fan speed control** (`auto`, `low`, `medium`, `high`)  
 ✅ **Swing mode (vertical + horizontal)** toggle  
+✅ Add **eco / turbo / / long** options as switches
 ✅ Unit selection (device / Celsius / Fahrenheit)  
 ✅ Config & options flows (UI-based setup)  
 ✅ Proper device grouping in HA registry  
@@ -88,7 +91,6 @@ Tokens are stored securely and remain valid for **365 days**, minimizing re-auth
 
 ## 🚧 Known Limitations / TODO
 
-🔲 Add **eco / turbo / display / long** options  
 🔲 Add **diagnostics page** for debug info  
 🔲 Add **token regeneration** button from the options panel  
 🔲 Improve **error handling** for network timeouts  
