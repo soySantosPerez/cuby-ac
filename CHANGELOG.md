@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2025-10-25
+### Added
+- Swing mode toggle (vertical & horizontal) for Cuby devices.
+### Fixed
+- Minor refactor in fan speed handling.
+
 ## [0.2.0] - 2025-10-24
 ### Added
 - Fan speed control (`auto`, `low`, `medium`, `high`)

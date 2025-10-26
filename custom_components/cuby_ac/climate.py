@@ -4,6 +4,7 @@ import logging
 from typing import Any, Optional, Dict, List
 
 from homeassistant.components.climate import ClimateEntity, ClimateEntityFeature, HVACMode
+from homeassistant.components.climate.const import SWING_BOTH, SWING_OFF
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.const import UnitOfTemperature, ATTR_TEMPERATURE
@@ -27,12 +28,14 @@ SUPPORTED_HVAC_MODES = [
     HVACMode.AUTO,
 ]
 SUPPORTED_FAN_MODES = ["auto", "low", "medium", "high"]
+SUPPORTED_SWING_MODES = [SWING_OFF, SWING_BOTH]
 
 SUPPORTED_FEATURES = (
     ClimateEntityFeature.TARGET_TEMPERATURE
     | ClimateEntityFeature.TURN_ON
     | ClimateEntityFeature.TURN_OFF
     | ClimateEntityFeature.FAN_MODE
+    | ClimateEntityFeature.SWING_MODE
 )
 
 # -------------------------
@@ -112,7 +115,9 @@ class CubyDeviceClimate(CoordinatorEntity[CubyCoordinator], ClimateEntity):
     _attr_current_temperature: Optional[float] = None
     _attr_target_temperature: Optional[float] = None
     _attr_fan_modes = SUPPORTED_FAN_MODES
+    _attr_swing_modes = SUPPORTED_SWING_MODES
     _attr_fan_mode: str | None = None
+    _attr_swing_mode: str | None = SWING_OFF
 
     def __init__(self, coordinator: CubyCoordinator, api: CubyApi, token: str, device_id: str, name: str) -> None:
         super().__init__(coordinator)
@@ -182,6 +187,12 @@ class CubyDeviceClimate(CoordinatorEntity[CubyCoordinator], ClimateEntity):
             fan = "auto"
         self._attr_fan_mode = fan
 
+        # Cuby: "auto" => swing ON | "off" => swing OFF
+        vertical = str((last.get("verticalVane") or "off")).lower()
+        horizontal = str((last.get("horizontalVane") or "off")).lower()
+        swing_on = (vertical == "auto") or (horizontal == "auto")
+        self._attr_swing_mode = SWING_BOTH if swing_on else SWING_OFF
+
     # ----- Coordinator hooks -----
     async def async_update(self) -> None:
         dev = self._device_payload()
@@ -237,6 +248,28 @@ class CubyDeviceClimate(CoordinatorEntity[CubyCoordinator], ClimateEntity):
 
         # Reflect immediately in UI; coordinator refresh will confirm
         self._attr_fan_mode = fm
+        self.async_write_ha_state()
+
+    async def async_set_swing_mode(self, swing_mode: str) -> None:
+        """Toggle swing ON/OFF by setting both vanes to auto/off."""
+        desired_on = (swing_mode == SWING_BOTH)
+
+        # Estado actual para evitar POSTs redundantes
+        dev = self._device_payload() or {}
+        last = dev.get("lastState") or {}
+        cur_vert = str((last.get("verticalVane") or "off")).lower()
+        cur_horz = str((last.get("horizontalVane") or "off")).lower()
+
+        target_val = "auto" if desired_on else "off"
+
+        # Envía solo lo que haga falta (si tu equipo requiere power on, añade "power": "on")
+        if cur_vert != target_val:
+            await self._post_state({"type": "verticalVane", "verticalVane": target_val})
+        if cur_horz != target_val:
+            await self._post_state({"type": "horizontalVane", "horizontalVane": target_val})
+
+        # Reflejar en UI de inmediato
+        self._attr_swing_mode = SWING_BOTH if desired_on else SWING_OFF
         self.async_write_ha_state()
 
     async def _post_state(self, payload: Dict[str, Any]) -> None:
