@@ -77,6 +77,8 @@ Tokens are stored securely and remain valid for **365 days**, minimizing re-auth
 ✅ Device discovery via `/devices`  
 ✅ Live state updates via `/devices/{id}?getState=true`  
 ✅ Power on/off, temperature, and mode control  
+✅ **Fan speed control** (`auto`, `low`, `medium`, `high`)  
+✅ **Swing mode (vertical + horizontal)** toggle  
 ✅ Unit selection (device / Celsius / Fahrenheit)  
 ✅ Config & options flows (UI-based setup)  
 ✅ Proper device grouping in HA registry  
@@ -86,7 +88,6 @@ Tokens are stored securely and remain valid for **365 days**, minimizing re-auth
 
 ## 🚧 Known Limitations / TODO
 
-🔲 Add **fan speed** (`low`, `medium`, `high`, `auto`)  
 🔲 Add **eco / turbo / display / long** options  
 🔲 Add **diagnostics page** for debug info  
 🔲 Add **token regeneration** button from the options panel  

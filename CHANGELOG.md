@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2025-10-24
+### Added
+- Fan speed control (`auto`, `low`, `medium`, `high`)
+- Swing mode toggle (vertical + horizontal)
+- Improved UI feedback and debug logs
+
+### Fixed
+- Removed unused `httpx` dependency
+- Better float parsing for device temperature data
+
 ## [0.1.0] - 2025-10-24
 ### Added
 - Initial public release of **Cuby AC** integration for Home Assistant (API v2).
